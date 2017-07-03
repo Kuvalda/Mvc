@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.FileProviders;
@@ -26,12 +27,13 @@ namespace Microsoft.AspNetCore.Mvc.Razor.Internal
             var applicationManager = new ApplicationPartManager();
             var options = new TestOptionsManager<RazorViewEngineOptions>();
             var referenceManager = new DefaultRazorReferenceManager(applicationManager, options);
+            var hostingEnvironment = Mock.Of<IHostingEnvironment>();
             accessor.Setup(a => a.FileProvider).Returns(fileProvider);
             var provider = new RazorViewCompilerProvider(
                 applicationManager,
                 new RazorTemplateEngine(RazorEngine.Create(), new FileProviderRazorProject(fileProvider)),
                 accessor.Object,
-                new CSharpCompiler(referenceManager, options),
+                new CSharpCompiler(referenceManager, hostingEnvironment),
                 options,
                 NullLoggerFactory.Instance);
 
